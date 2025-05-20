@@ -1,5 +1,6 @@
 package com.shengj.stockapp.ui.stocks
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -23,9 +24,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +37,8 @@ import com.shengj.stockapp.model.SortColumn
 import com.shengj.stockapp.model.Stock
 import com.shengj.stockapp.model.TabType
 
+private const val TAG = "StockScreen"
+
 @Composable
 fun StockScreen(
     viewModel: StockViewModel = hiltViewModel()
@@ -46,6 +46,9 @@ fun StockScreen(
     val viewState by viewModel.viewState.observeAsState(StockViewState.Loading)
     val currentTabType by viewModel.currentTabType.observeAsState(TabType.ALL)
     val currentSortColumn by viewModel.sortColumn.observeAsState(SortColumn.LATEST)
+    val topTabType by viewModel.topTabType.observeAsState(TopTabType.STOCK)
+    
+    Log.d(TAG, "Current top tab: $topTabType")
     
     Column(
         modifier = Modifier
@@ -53,40 +56,55 @@ fun StockScreen(
             .background(Color(0xFFF5F5F5))
     ) {
         TopTabBar(
-            onTabSelected = { viewModel.switchTopTab(it) }
-        )
-        
-        SubTabBar(
-            currentTab = currentTabType,
-            onTabSelected = { viewModel.loadStocks(it) }
-        )
-        
-        when (val state = viewState) {
-            is StockViewState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+            selectedTabType = topTabType,
+            onTabSelected = { 
+                Log.d(TAG, "Top tab selected: $it")
+                viewModel.switchTopTab(it) 
             }
-            is StockViewState.Success -> {
-                StockTable(
-                    stocks = state.stocks,
-                    currentSortColumn = currentSortColumn,
-                    onSortColumnSelected = { viewModel.setSortColumn(it) }
+        )
+        
+        // 根据顶部标签类型显示不同的内容
+        when (topTabType) {
+            TopTabType.STOCK -> {
+                SubTabBar(
+                    currentTab = currentTabType,
+                    onTabSelected = { viewModel.loadStocks(it) }
                 )
-            }
-            is StockViewState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = state.message,
-                        color = Color.Red
-                    )
+                
+                when (val state = viewState) {
+                    is StockViewState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    is StockViewState.Success -> {
+                        StockTable(
+                            stocks = state.stocks,
+                            currentSortColumn = currentSortColumn,
+                            onSortColumnSelected = { viewModel.setSortColumn(it) }
+                        )
+                    }
+                    is StockViewState.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = state.message,
+                                color = Color.Red
+                            )
+                        }
+                    }
                 }
+            }
+            TopTabType.FUND -> {
+                FundScreen()
+            }
+            TopTabType.PORTFOLIO -> {
+                PortfolioScreen()
             }
         }
     }
@@ -94,15 +112,16 @@ fun StockScreen(
 
 @Composable
 fun TopTabBar(
+    selectedTabType: TopTabType,
     onTabSelected: (TopTabType) -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
-    
     val tabs = listOf(
         "自选股" to TopTabType.STOCK,
         "基金" to TopTabType.FUND,
         "组合" to TopTabType.PORTFOLIO
     )
+    
+    val selectedTabIndex = tabs.indexOfFirst { it.second == selectedTabType }
     
     Box(
         modifier = Modifier
@@ -110,7 +129,7 @@ fun TopTabBar(
             .background(Color(0xFFFF5C00))
     ) {
         TabRow(
-            selectedTabIndex = selectedTab,
+            selectedTabIndex = selectedTabIndex,
             backgroundColor = Color(0xFFFF5C00),
             contentColor = Color.White,
             divider = {},
@@ -118,9 +137,8 @@ fun TopTabBar(
         ) {
             tabs.forEachIndexed { index, (title, type) ->
                 Tab(
-                    selected = selectedTab == index,
+                    selected = selectedTabIndex == index,
                     onClick = {
-                        selectedTab = index
                         onTabSelected(type)
                     },
                     text = {

@@ -1,14 +1,22 @@
 package com.shengj.stockapp.ui
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.BottomAppBar
+import androidx.compose.foundation.layout.width
+
+
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -27,6 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shengj.stockapp.ui.community.CommunityScreen
@@ -59,36 +69,32 @@ fun MainScreen() {
     Scaffold(
         modifier = Modifier.statusBarsPadding(),
         bottomBar = {
-            Column(modifier = Modifier.navigationBarsPadding()) {
-                BottomAppBar(
-                    backgroundColor = Color.White,
-                    elevation = 8.dp
+            Box(
+                modifier = Modifier.navigationBarsPadding()
+            ) {
+                // 自定义底部导航栏
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
                 ) {
-                    BottomNavItem.values().forEach { item ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { 
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        BottomNavItem.entries.forEach { item ->
+                            NavItem(
+                                item = item,
+                                isSelected = currentTab == item,
+                                onClick = {
                                     Log.d(TAG, "Tab clicked: ${item.label}")
-                                    currentTab = item 
+                                    currentTab = item
                                 }
-                                .padding(vertical = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.label,
-                                    tint = if (currentTab == item) Color(0xFFFF5C00) else Color.Gray
-                                )
-                                Text(
-                                    text = item.label,
-                                    color = if (currentTab == item) Color(0xFFFF5C00) else Color.Gray,
-                                    fontSize = 12.sp
-                                )
-                            }
+                            )
                         }
                     }
                 }
@@ -109,5 +115,39 @@ fun MainScreen() {
                 BottomNavItem.TRADE -> TradeScreen()
             }
         }
+    }
+}
+
+@Composable
+private fun NavItem(
+    item: BottomNavItem,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val color = if (isSelected) Color(0xFFFF5C00) else Color.Gray
+    
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(8.dp)
+            .width(48.dp)
+    ) {
+        Icon(
+            imageVector = item.icon,
+            contentDescription = item.label,
+            tint = color
+        )
+        
+        Spacer(modifier = Modifier.height(4.dp))
+        
+        Text(
+            text = item.label,
+            color = color,
+            fontSize = 10.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Visible,
+            textAlign = TextAlign.Center
+        )
     }
 } 

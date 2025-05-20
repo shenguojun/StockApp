@@ -33,12 +33,6 @@ class MainActivity : ComponentActivity() {
                     darkIcons = false
                 )
                 
-                // 设置导航栏为白色，使用暗色图标
-                systemUiController.setNavigationBarColor(
-                    color = Color.White,
-                    darkIcons = true
-                )
-                
                 // 确保系统栏是可见的
                 systemUiController.systemBarsDarkContentEnabled = false
             }
