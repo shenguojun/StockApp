@@ -12,7 +12,7 @@
 - 多维度排序：支持按最新价、涨幅、涨跌等多种方式排序
 
 ## 应用截图
-![自选股](screenshot/Screenshot.png)
+![自选股](screenshots/Screenshot.png)
 
 ## 技术栈
 
