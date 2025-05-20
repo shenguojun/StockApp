@@ -26,6 +26,9 @@ class MainActivity : ComponentActivity() {
         // 配置WindowInsets控制器
         WindowCompat.setDecorFitsSystemWindows(window, false)
         
+        // 直接设置状态栏颜色（这种方式适用于低版本Android）
+        window.statusBarColor = android.graphics.Color.parseColor("#FF5C00")
+        
         setContent {
             val systemUiController = rememberSystemUiController()
             
@@ -36,12 +39,17 @@ class MainActivity : ComponentActivity() {
                     darkIcons = false
                 )
                 
+                // 确保导航栏也一致处理
+                systemUiController.setNavigationBarColor(
+                    color = Color.White,
+                    darkIcons = true
+                )
             }
             
             StockAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFFF5F5F5)
+                    color = Color(0xFFFF5C00)
                 ) {
                     MainScreen()
                 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -128,28 +129,34 @@ fun TopTabBar(
             .fillMaxWidth()
             .background(Color(0xFFFF5C00))
     ) {
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-            backgroundColor = Color(0xFFFF5C00),
-            contentColor = Color.White,
-            divider = {},
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
         ) {
-            tabs.forEachIndexed { index, (title, type) ->
-                Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = {
-                        onTabSelected(type)
-                    },
-                    text = {
-                        Text(
-                            text = title,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                )
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                backgroundColor = Color(0xFFFF5C00),
+                contentColor = Color.White,
+                divider = {},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                tabs.forEachIndexed { index, (title, type) ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            onTabSelected(type)
+                        },
+                        text = {
+                            Text(
+                                text = title,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    )
+                }
             }
         }
     }
