@@ -306,6 +306,7 @@ fun StockRow(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
+                color = Color.Black,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
