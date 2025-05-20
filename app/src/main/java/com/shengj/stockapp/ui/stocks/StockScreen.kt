@@ -14,21 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -56,50 +47,45 @@ fun StockScreen(
     val currentTabType by viewModel.currentTabType.observeAsState(TabType.ALL)
     val currentSortColumn by viewModel.sortColumn.observeAsState(SortColumn.LATEST)
     
-    Scaffold(
-        bottomBar = { BottomNavBar() }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(Color(0xFFF5F5F5))
-        ) {
-            TopTabBar(
-                onTabSelected = { viewModel.switchTopTab(it) }
-            )
-            
-            SubTabBar(
-                currentTab = currentTabType,
-                onTabSelected = { viewModel.loadStocks(it) }
-            )
-            
-            when (val state = viewState) {
-                is StockViewState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+    ) {
+        TopTabBar(
+            onTabSelected = { viewModel.switchTopTab(it) }
+        )
+        
+        SubTabBar(
+            currentTab = currentTabType,
+            onTabSelected = { viewModel.loadStocks(it) }
+        )
+        
+        when (val state = viewState) {
+            is StockViewState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-                is StockViewState.Success -> {
-                    StockTable(
-                        stocks = state.stocks,
-                        currentSortColumn = currentSortColumn,
-                        onSortColumnSelected = { viewModel.setSortColumn(it) }
+            }
+            is StockViewState.Success -> {
+                StockTable(
+                    stocks = state.stocks,
+                    currentSortColumn = currentSortColumn,
+                    onSortColumnSelected = { viewModel.setSortColumn(it) }
+                )
+            }
+            is StockViewState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = state.message,
+                        color = Color.Red
                     )
-                }
-                is StockViewState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = state.message,
-                            color = Color.Red
-                        )
-                    }
                 }
             }
         }
@@ -376,74 +362,6 @@ fun StockChangePercentCell(changePercent: Double) {
                     shape = RoundedCornerShape(4.dp)
                 )
                 .padding(horizontal = 4.dp, vertical = 2.dp)
-        )
-    }
-}
-
-@Composable
-fun BottomNavBar() {
-    BottomAppBar(
-        backgroundColor = Color.White,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            NavBarItem(
-                icon = Icons.Default.Home,
-                label = "首页",
-                modifier = Modifier.weight(1f)
-            )
-            NavBarItem(
-                icon = Icons.Default.Person,
-                label = "社区",
-                modifier = Modifier.weight(1f)
-            )
-            NavBarItem(
-                icon = Icons.Default.List,
-                label = "自选",
-                isSelected = true,
-                modifier = Modifier.weight(1f)
-            )
-            NavBarItem(
-                icon = Icons.Default.Search,
-                label = "行情",
-                modifier = Modifier.weight(1f)
-            )
-            NavBarItem(
-                icon = Icons.Default.Settings,
-                label = "理财",
-                modifier = Modifier.weight(1f)
-            )
-            NavBarItem(
-                icon = Icons.Default.Home,
-                label = "交易",
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
-
-@Composable
-fun NavBarItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    isSelected: Boolean = false,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(8.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isSelected) Color(0xFFFF5C00) else Color.Gray
-        )
-        Text(
-            text = label,
-            color = if (isSelected) Color(0xFFFF5C00) else Color.Gray,
-            fontSize = 12.sp
         )
     }
 }
