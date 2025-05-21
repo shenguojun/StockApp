@@ -25,6 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -165,7 +166,11 @@ fun TopTabBar(
                     Box(
                         modifier = Modifier
                             .padding(end = 24.dp)
-                            .clickable { onTabSelected(type) },
+                            .clickable(
+                                onClick = { onTabSelected(type) },
+                                indication = null,
+                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -216,7 +221,11 @@ fun SubTabBar(
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .clickable { onTabSelected(type) }
+                        .clickable(
+                            onClick = { onTabSelected(type) },
+                            indication = null,
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        )
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -332,7 +341,11 @@ fun TableHeader(
         modifier = Modifier
             .width(100.dp)
             .height(32.dp)  // 明确指定高度与名称/代码表头一致
-            .clickable { onSortColumnSelected(column) }
+            .clickable(
+                onClick = { onSortColumnSelected(column) },
+                indication = null,
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            )
             .padding(horizontal = 8.dp),
         contentAlignment = Alignment.Center
     ) {
