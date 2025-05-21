@@ -268,12 +268,14 @@ fun StockTable(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(vertical = 8.dp)
+                .padding(vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically  // 确保所有内容垂直居中
         ) {
             // 名称/代码列头
             Box(
                 modifier = Modifier
                     .width(120.dp)
+                    .height(32.dp)  // 明确指定高度
                     .padding(start = 16.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -329,8 +331,9 @@ fun TableHeader(
     Box(
         modifier = Modifier
             .width(100.dp)
+            .height(32.dp)  // 明确指定高度与名称/代码表头一致
             .clickable { onSortColumnSelected(column) }
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -466,7 +469,9 @@ fun PriceCell(
     isPositive: Boolean
 ) {
     Box(
-        modifier = Modifier.width(100.dp),
+        modifier = Modifier
+            .width(100.dp)
+            .height(32.dp),  // 明确指定高度
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -485,7 +490,9 @@ fun PriceCell(
 @Composable
 fun ChangePercentCell(changePercent: Double) {
     Box(
-        modifier = Modifier.width(100.dp),
+        modifier = Modifier
+            .width(100.dp)
+            .height(32.dp),  // 明确指定高度
         contentAlignment = Alignment.Center
     ) {
         Box(
