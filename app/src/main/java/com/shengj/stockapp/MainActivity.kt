@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
             StockAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFFFF5C00)
+                    color = Color.White
                 ) {
                     MainScreen()
                 }

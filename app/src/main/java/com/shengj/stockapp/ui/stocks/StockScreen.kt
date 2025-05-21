@@ -33,17 +33,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.shengj.stockapp.model.SortColumn
 import com.shengj.stockapp.model.Stock
 import com.shengj.stockapp.model.StockType
 import com.shengj.stockapp.model.TabType
+import com.shengj.stockapp.ui.navigation.Route
 
 private const val TAG = "StockScreen"
 
 @Composable
 fun StockScreen(
-    viewModel: StockViewModel = hiltViewModel()
+    viewModel: StockViewModel,
+    navController: NavHostController = rememberNavController()
 ) {
     val viewState by viewModel.viewState.observeAsState(StockViewState.Loading)
     val currentTabType by viewModel.currentTabType.observeAsState(TabType.ALL)
@@ -61,7 +64,15 @@ fun StockScreen(
             selectedTabType = topTabType,
             onTabSelected = { 
                 Log.d(TAG, "Top tab selected: $it")
-                viewModel.switchTopTab(it) 
+                viewModel.switchTopTab(it)
+                // 如果当前标签类型与选择的不同，则导航到相应的路由
+                if (topTabType != it) {
+                    when (it) {
+                        TopTabType.FUND -> navController.navigate(Route.StocksTab.createRoute(TopTabType.FUND.name))
+                        TopTabType.PORTFOLIO -> navController.navigate(Route.StocksTab.createRoute(TopTabType.PORTFOLIO.name))
+                        TopTabType.STOCK -> navController.navigate(Route.StocksTab.createRoute(TopTabType.STOCK.name))
+                    }
+                }
             }
         )
         
