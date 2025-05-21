@@ -8,11 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.shengj.stockapp.ui.MainScreen
+import com.shengj.stockapp.ui.theme.Orange
 import com.shengj.stockapp.ui.theme.StockAppTheme
+import com.shengj.stockapp.ui.theme.White
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
         // 配置WindowInsets控制器
         WindowCompat.setDecorFitsSystemWindows(window, false)
         
-        // 直接设置状态栏颜色（这种方式适用于低版本Android）
+        // 设置状态栏颜色（适用于低版本Android）
         window.statusBarColor = android.graphics.Color.parseColor("#FF5C00")
         
         setContent {
@@ -35,13 +36,13 @@ class MainActivity : ComponentActivity() {
             SideEffect {
                 // 设置状态栏为App主题橙色，使用亮色图标
                 systemUiController.setStatusBarColor(
-                    color = Color(0xFFFF5C00),
+                    color = Orange,
                     darkIcons = false
                 )
                 
                 // 确保导航栏也一致处理
                 systemUiController.setNavigationBarColor(
-                    color = Color.White,
+                    color = White,
                     darkIcons = true
                 )
             }
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
             StockAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White
+                    color = White
                 ) {
                     MainScreen()
                 }

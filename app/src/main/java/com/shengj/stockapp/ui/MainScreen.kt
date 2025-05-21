@@ -29,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +47,9 @@ import com.shengj.stockapp.ui.navigation.Route
 import com.shengj.stockapp.ui.navigation.findBottomNavIndexByRoute
 import com.shengj.stockapp.ui.stocks.StockTabHostScreen
 import com.shengj.stockapp.ui.stocks.StockViewModel
+import com.shengj.stockapp.ui.theme.Gray
+import com.shengj.stockapp.ui.theme.Orange
+import com.shengj.stockapp.ui.theme.White
 import com.shengj.stockapp.ui.trade.TradeScreen
 import com.shengj.stockapp.ui.wealth.WealthScreen
 
@@ -155,7 +157,7 @@ private fun BottomNavBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White),
+                .background(White),
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -196,7 +198,7 @@ private fun NavItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (isSelected) Color(0xFFFF5C00) else Color.Gray
+    val color = if (isSelected) Orange else Gray
     
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +38,12 @@ import com.shengj.stockapp.model.SortColumn
 import com.shengj.stockapp.model.Stock
 import com.shengj.stockapp.model.StockType
 import com.shengj.stockapp.model.TabType
+import com.shengj.stockapp.ui.components.ErrorState
+import com.shengj.stockapp.ui.components.LoadingState
 import com.shengj.stockapp.ui.navigation.Route
+import com.shengj.stockapp.ui.theme.Background
+import com.shengj.stockapp.ui.theme.Orange
+import com.shengj.stockapp.ui.theme.White
 
 private const val TAG = "StockScreen"
 
@@ -58,7 +62,7 @@ fun StockScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(Background)
     ) {
         TopTabBar(
             selectedTabType = topTabType,
@@ -86,12 +90,7 @@ fun StockScreen(
                 
                 when (val state = viewState) {
                     is StockViewState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                        LoadingState()
                     }
                     is StockViewState.Success -> {
                         StockTable(
@@ -101,15 +100,7 @@ fun StockScreen(
                         )
                     }
                     is StockViewState.Error -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = state.message,
-                                color = Color.Red
-                            )
-                        }
+                        ErrorState(message = state.message)
                     }
                 }
             }
@@ -137,7 +128,7 @@ fun TopTabBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFFF5C00))
+            .background(Orange)
     ) {
         Column(
             modifier = Modifier
@@ -159,13 +150,13 @@ fun TopTabBar(
                 ) {
                     Text(
                         text = "东方",
-                        color = Color.White,
+                        color = White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
                     Text(
                         text = "财富",
-                        color = Color.White,
+                        color = White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
@@ -186,7 +177,7 @@ fun TopTabBar(
                     ) {
                         Text(
                             text = title,
-                            color = Color.White,
+                            color = White,
                             fontWeight = FontWeight.Bold,
                             fontSize = if (isSelected) 20.sp else 16.sp,
                             modifier = Modifier.padding(vertical = 8.dp)
