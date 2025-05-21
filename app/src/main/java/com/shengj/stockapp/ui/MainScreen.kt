@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.shengj.stockapp.R
 import com.shengj.stockapp.ui.community.CommunityScreen
 import com.shengj.stockapp.ui.home.HomeScreen
 import com.shengj.stockapp.ui.market.MarketScreen
@@ -59,16 +61,16 @@ private const val TAG = "MainScreen"
  * 底部导航项定义
  */
 enum class BottomNavItem(
-    val icon: ImageVector,
-    val label: String,
+    val icon: ImageVector, 
+    val labelResId: Int,
     val route: String
 ) {
-    HOME(Icons.Default.Home, "首页", Route.Home.route),
-    COMMUNITY(Icons.Default.Person, "社区", Route.Community.route),
-    STOCKS(Icons.Default.List, "自选", Route.Stocks.route),
-    MARKET(Icons.Default.Search, "行情", Route.Market.route),
-    WEALTH(Icons.Default.Settings, "理财", Route.Wealth.route),
-    TRADE(Icons.Default.Home, "交易", Route.Trade.route)
+    HOME(Icons.Default.Home, R.string.nav_home, Route.Home.route),
+    COMMUNITY(Icons.Default.Person, R.string.nav_community, Route.Community.route),
+    STOCKS(Icons.Default.List, R.string.nav_stocks, Route.Stocks.route),
+    MARKET(Icons.Default.Search, R.string.nav_market, Route.Market.route),
+    WEALTH(Icons.Default.Settings, R.string.nav_wealth, Route.Wealth.route),
+    TRADE(Icons.Default.Home, R.string.nav_trade, Route.Trade.route)
 }
 
 @Composable
@@ -172,7 +174,7 @@ private fun BottomNavBar(
                         item = item,
                         isSelected = selectedTabIndex == index,
                         onClick = {
-                            Log.d(TAG, "Tab clicked: ${item.label}, route: ${item.route}")
+                            Log.d(TAG, "Tab clicked: ${item.labelResId}, route: ${item.route}")
                             if (item.route != navController.currentDestination?.route) {
                                 // 简化导航，避免使用graph
                                 navController.navigate(item.route) {
@@ -199,6 +201,7 @@ private fun NavItem(
     onClick: () -> Unit
 ) {
     val color = if (isSelected) Orange else Gray
+    val label = stringResource(id = item.labelResId)
     
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -213,14 +216,14 @@ private fun NavItem(
     ) {
         Icon(
             imageVector = item.icon,
-            contentDescription = item.label,
+            contentDescription = label,
             tint = color
         )
         
         Spacer(modifier = Modifier.height(4.dp))
         
         Text(
-            text = item.label,
+            text = label,
             color = color,
             fontSize = 10.sp,
             maxLines = 1,

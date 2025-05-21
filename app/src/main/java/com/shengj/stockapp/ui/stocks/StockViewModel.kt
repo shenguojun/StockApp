@@ -1,15 +1,17 @@
 package com.shengj.stockapp.ui.stocks
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shengj.stockapp.R
+import com.shengj.stockapp.StockApplication
 import com.shengj.stockapp.data.StockRepository
 import com.shengj.stockapp.model.SortColumn
 import com.shengj.stockapp.model.Stock
 import com.shengj.stockapp.model.TabType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -22,17 +24,17 @@ class StockViewModel @Inject constructor(
     private val stockRepository: StockRepository
 ) : ViewModel() {
 
-    private val _viewState = MutableLiveData<StockViewState>(StockViewState.Loading)
-    val viewState: LiveData<StockViewState> = _viewState
+    private val _viewState = MutableStateFlow<StockViewState>(StockViewState.Loading)
+    val viewState: StateFlow<StockViewState> = _viewState
 
-    private val _currentTabType = MutableLiveData<TabType>(TabType.ALL)
-    val currentTabType: LiveData<TabType> = _currentTabType
+    private val _currentTabType = MutableStateFlow(TabType.ALL)
+    val currentTabType: StateFlow<TabType> = _currentTabType
 
-    private val _sortColumn = MutableLiveData<SortColumn>(SortColumn.LATEST)
-    val sortColumn: LiveData<SortColumn> = _sortColumn
+    private val _sortColumn = MutableStateFlow(SortColumn.LATEST)
+    val sortColumn: StateFlow<SortColumn> = _sortColumn
     
-    private val _topTabType = MutableLiveData<TopTabType>(TopTabType.STOCK)
-    val topTabType: LiveData<TopTabType> = _topTabType
+    private val _topTabType = MutableStateFlow(TopTabType.STOCK)
+    val topTabType: StateFlow<TopTabType> = _topTabType
 
     init {
         loadStocks(TabType.ALL)
@@ -44,7 +46,7 @@ class StockViewModel @Inject constructor(
         viewModelScope.launch {
             stockRepository.getStocks(tabType)
                 .onStart { _viewState.value = StockViewState.Loading }
-                .catch { e -> _viewState.value = StockViewState.Error(e.message ?: "未知错误") }
+                .catch { e -> _viewState.value = StockViewState.Error(e.message ?: StockApplication.instance.getString(R.string.error_unknown)) }
                 .collect { stocks ->
                     _viewState.value = StockViewState.Success(stocks)
                 }

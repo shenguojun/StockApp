@@ -2,7 +2,6 @@ package com.shengj.stockapp.ui.stocks
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,28 +21,32 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.shengj.stockapp.R
 import com.shengj.stockapp.model.SortColumn
 import com.shengj.stockapp.model.Stock
 import com.shengj.stockapp.model.StockType
 import com.shengj.stockapp.model.TabType
 import com.shengj.stockapp.ui.components.ErrorState
 import com.shengj.stockapp.ui.components.LoadingState
-import com.shengj.stockapp.ui.navigation.Route
+import com.shengj.stockapp.ui.components.rememberDerivedState
 import com.shengj.stockapp.ui.theme.Background
+import com.shengj.stockapp.ui.theme.Modifiers.noRippleClickable
 import com.shengj.stockapp.ui.theme.Orange
 import com.shengj.stockapp.ui.theme.White
+import com.shengj.stockapp.utils.formatNumberWithResource
+import com.shengj.stockapp.utils.formatPercentWithResource
 
 private const val TAG = "StockScreen"
 
@@ -52,10 +55,10 @@ fun StockScreen(
     viewModel: StockViewModel,
     navController: NavHostController = rememberNavController()
 ) {
-    val viewState by viewModel.viewState.observeAsState(StockViewState.Loading)
-    val currentTabType by viewModel.currentTabType.observeAsState(TabType.ALL)
-    val currentSortColumn by viewModel.sortColumn.observeAsState(SortColumn.LATEST)
-    val topTabType by viewModel.topTabType.observeAsState(TopTabType.STOCK)
+    val viewState by viewModel.viewState.collectAsState()
+    val currentTabType by viewModel.currentTabType.collectAsState()
+    val currentSortColumn by viewModel.sortColumn.collectAsState()
+    val topTabType by viewModel.topTabType.collectAsState()
     
     Log.d(TAG, "Current top tab: $topTabType")
     
@@ -68,15 +71,8 @@ fun StockScreen(
             selectedTabType = topTabType,
             onTabSelected = { 
                 Log.d(TAG, "Top tab selected: $it")
+                // 直接切换标签，不导航到新页面
                 viewModel.switchTopTab(it)
-                // 如果当前标签类型与选择的不同，则导航到相应的路由
-                if (topTabType != it) {
-                    when (it) {
-                        TopTabType.FUND -> navController.navigate(Route.StocksTab.createRoute(TopTabType.FUND.name))
-                        TopTabType.PORTFOLIO -> navController.navigate(Route.StocksTab.createRoute(TopTabType.PORTFOLIO.name))
-                        TopTabType.STOCK -> navController.navigate(Route.StocksTab.createRoute(TopTabType.STOCK.name))
-                    }
-                }
             }
         )
         
@@ -120,9 +116,9 @@ fun TopTabBar(
     onTabSelected: (TopTabType) -> Unit
 ) {
     val tabs = listOf(
-        "自选股" to TopTabType.STOCK,
-        "基金" to TopTabType.FUND,
-        "组合" to TopTabType.PORTFOLIO
+        stringResource(R.string.toptab_stock) to TopTabType.STOCK,
+        stringResource(R.string.toptab_fund) to TopTabType.FUND,
+        stringResource(R.string.toptab_portfolio) to TopTabType.PORTFOLIO
     )
     
     Box(
@@ -149,13 +145,13 @@ fun TopTabBar(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "东方",
+                        text = stringResource(R.string.logo_top),
                         color = White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "财富",
+                        text = stringResource(R.string.logo_bottom),
                         color = White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
@@ -168,11 +164,7 @@ fun TopTabBar(
                     Box(
                         modifier = Modifier
                             .padding(end = 24.dp)
-                            .clickable(
-                                onClick = { onTabSelected(type) },
-                                indication = null,
-                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-                            ),
+                            .noRippleClickable { onTabSelected(type) },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -198,11 +190,11 @@ fun SubTabBar(
     onTabSelected: (TabType) -> Unit
 ) {
     val tabs = listOf(
-        "全部" to TabType.ALL,
-        "持仓" to TabType.POSITION,
-        "沪深京" to TabType.A,
-        "港股" to TabType.HK,
-        "美股" to TabType.US
+        stringResource(R.string.tab_all) to TabType.ALL,
+        stringResource(R.string.tab_position) to TabType.POSITION,
+        stringResource(R.string.tab_a) to TabType.A,
+        stringResource(R.string.tab_hk) to TabType.HK,
+        stringResource(R.string.tab_us) to TabType.US
     )
     
     Box(
@@ -223,11 +215,7 @@ fun SubTabBar(
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .clickable(
-                            onClick = { onTabSelected(type) },
-                            indication = null,
-                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-                        )
+                        .noRippleClickable { onTabSelected(type) }
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -291,7 +279,7 @@ fun StockTable(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "名称/代码",
+                    text = stringResource(R.string.stock_column_name_code),
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -303,18 +291,18 @@ fun StockTable(
                     .fillMaxWidth()
                     .horizontalScroll(horizontalScrollState)
             ) {
-                TableHeader("最新", SortColumn.LATEST, currentSortColumn, onSortColumnSelected, Color(0xFFFF5C00))
-                TableHeader("涨幅", SortColumn.CHANGE_PERCENT, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("涨跌", SortColumn.CHANGE, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("涨速", SortColumn.MOMENTUM, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("总量", SortColumn.VOLUME, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("现量", SortColumn.CURRENT_VOLUME, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("金额", SortColumn.AMOUNT, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("量比", SortColumn.VOLUME_RATIO, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("最高", SortColumn.HIGH, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("最低", SortColumn.LOW, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("振幅", SortColumn.AMPLITUDE, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
-                TableHeader("换手", SortColumn.TURNOVER_RATE, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_latest), SortColumn.LATEST, currentSortColumn, onSortColumnSelected, Color(0xFFFF5C00))
+                TableHeader(stringResource(R.string.stock_column_change_percent), SortColumn.CHANGE_PERCENT, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_change), SortColumn.CHANGE, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_momentum), SortColumn.MOMENTUM, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_volume), SortColumn.VOLUME, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_current_volume), SortColumn.CURRENT_VOLUME, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_amount), SortColumn.AMOUNT, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_volume_ratio), SortColumn.VOLUME_RATIO, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_high), SortColumn.HIGH, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_low), SortColumn.LOW, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_amplitude), SortColumn.AMPLITUDE, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
+                TableHeader(stringResource(R.string.stock_column_turnover_rate), SortColumn.TURNOVER_RATE, currentSortColumn, onSortColumnSelected, Color(0xFF666666))
             }
         }
         
@@ -342,12 +330,8 @@ fun TableHeader(
     Box(
         modifier = Modifier
             .width(90.dp)
-            .height(32.dp)  // 明确指定高度与名称/代码表头一致
-            .clickable(
-                onClick = { onSortColumnSelected(column) },
-                indication = null,
-                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-            )
+            .height(32.dp)  // 明确指定高度
+            .noRippleClickable { onSortColumnSelected(column) }
             .padding(horizontal = 8.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -365,6 +349,17 @@ fun StockRow(
     stock: Stock,
     horizontalScrollState: androidx.compose.foundation.ScrollState
 ) {
+    // 先在Composable上下文中获取资源字符串
+    val emptyPlaceholder = stringResource(R.string.format_empty)
+    val percentFormat = stringResource(R.string.format_percent)
+    
+    // 在Composable上下文中预格式化所有值
+    val formattedVolume = formatNumberWithResource(stock.volume)
+    val formattedCurrentVolume = formatNumberWithResource(stock.currentVolume)
+    val formattedAmount = formatNumberWithResource(stock.amount)
+    val formattedAmplitude = String.format(percentFormat, stock.amplitude.toString())
+    val formattedTurnoverRate = String.format(percentFormat, stock.turnoverRate.toString())
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -376,21 +371,25 @@ fun StockRow(
                 .width(130.dp)
                 .padding(start = 16.dp)
         ) {
-            // 根据股票名称长度动态调整字体大小和间距
+            // 使用派生状态计算字体大小和字母间距
             val nameLength = stock.name.length
-            val fontSize = when {
-                nameLength <= 4 -> 15.sp  // 短名称使用较大字体
-                nameLength <= 6 -> 14.sp  // 中等长度使用中等字体
-                nameLength <= 10 -> 13.sp // 较长名称使用小字体
-                else -> 12.sp            // 非常长的名称使用最小字体
-            }
-            
-            val letterSpacing = when {
-                nameLength <= 4 -> 0.sp   // 短名称使用正常间距
-                nameLength <= 6 -> (-0.3).sp // 中等长度稍微压缩
-                nameLength <= 10 -> (-0.5).sp // 较长名称压缩间距
-                else -> (-0.8).sp         // 非常长的名称最大压缩间距
-            }
+            val (fontSize, letterSpacing) = rememberDerivedState(nameLength) { length ->
+                val size = when {
+                    length <= 4 -> 15.sp  // 短名称使用较大字体
+                    length <= 6 -> 14.sp  // 中等长度使用中等字体
+                    length <= 10 -> 13.sp // 较长名称使用小字体
+                    else -> 12.sp         // 非常长的名称使用最小字体
+                }
+                
+                val spacing = when {
+                    length <= 4 -> 0.sp   // 短名称使用正常间距
+                    length <= 6 -> (-0.3).sp // 中等长度稍微压缩
+                    length <= 10 -> (-0.5).sp // 较长名称压缩间距
+                    else -> (-0.8).sp     // 非常长的名称最大压缩间距
+                }
+                
+                size to spacing
+            }.value
             
             Text(
                 text = stock.name,
@@ -413,38 +412,10 @@ fun StockRow(
                 )
                 
                 // 根据股票类型显示标签
-                if (stock.type == StockType.HK) {
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .background(
-                                color = Color(0xFF9E9E9E),
-                                shape = RoundedCornerShape(2.dp)
-                            )
-                            .padding(horizontal = 2.dp)
-                    ) {
-                        Text(
-                            text = "HK",
-                            color = Color.White,
-                            fontSize = 9.sp
-                        )
-                    }
-                } else if (stock.type == StockType.US) {
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .background(
-                                color = Color(0xFF9E9E9E),
-                                shape = RoundedCornerShape(2.dp)
-                            )
-                            .padding(horizontal = 2.dp)
-                    ) {
-                        Text(
-                            text = "US",
-                            color = Color.White,
-                            fontSize = 9.sp
-                        )
-                    }
+                when (stock.type) {
+                    StockType.HK -> StockTypeTag("HK")
+                    StockType.US -> StockTypeTag("US")
+                    else -> {} // 不显示标签
                 }
             }
         }
@@ -456,42 +427,68 @@ fun StockRow(
                 .horizontalScroll(horizontalScrollState),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // 使用安全的方式预格式化值
+            val price = stock.price.toString()
+            val change = if (stock.change >= 0) stock.change.toString() else "${stock.change}"
+            val volumeRatio = stock.volumeRatio.toString()
+            val high = stock.high.toString()
+            val low = stock.low.toString()
+            
             // 最新价格
-            PriceCell(stock.price.toString(), stock.changePercent >= 0)
+            PriceCell(price, stock.changePercent >= 0)
             
             // 涨幅百分比
             ChangePercentCell(stock.changePercent)
             
             // 涨跌值
-            PriceCell(if (stock.change >= 0) stock.change.toString() else "${stock.change}", stock.change >= 0)
+            PriceCell(change, stock.change >= 0)
             
             // 涨速 (占位)
-            PriceCell("--", true)
+            PriceCell(emptyPlaceholder, true)
             
             // 总量
-            PriceCell(formatNumber(stock.volume), true)
+            PriceCell(formattedVolume, true)
             
             // 现量
-            PriceCell(formatNumber(stock.currentVolume), true)
+            PriceCell(formattedCurrentVolume, true)
             
             // 金额
-            PriceCell(formatNumber(stock.amount), true)
+            PriceCell(formattedAmount, true)
             
             // 量比
-            PriceCell(stock.volumeRatio.toString(), true)
+            PriceCell(volumeRatio, true)
             
             // 最高
-            PriceCell(stock.high.toString(), true)
+            PriceCell(high, true)
             
             // 最低
-            PriceCell(stock.low.toString(), true)
+            PriceCell(low, true)
             
             // 振幅
-            PriceCell(stock.amplitude.toString() + "%", true)
+            PriceCell(formattedAmplitude, true)
             
             // 换手
-            PriceCell(stock.turnoverRate.toString() + "%", true)
+            PriceCell(formattedTurnoverRate, true)
         }
+    }
+}
+
+@Composable
+fun StockTypeTag(type: String) {
+    Box(
+        modifier = Modifier
+            .padding(start = 4.dp)
+            .background(
+                color = Color(0xFF9E9E9E),
+                shape = RoundedCornerShape(2.dp)
+            )
+            .padding(horizontal = 2.dp)
+    ) {
+        Text(
+            text = type,
+            color = Color.White,
+            fontSize = 9.sp
+        )
     }
 }
 
@@ -536,28 +533,11 @@ fun ChangePercentCell(changePercent: Double) {
                 .padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
             Text(
-                text = if (changePercent >= 0) "+${changePercent}%" else "${changePercent}%",
+                text = formatPercentWithResource(changePercent),
                 color = Color.White,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal
             )
         }
-    }
-}
-
-// 辅助函数
-fun formatNumber(number: Long): String {
-    return when {
-        number >= 100000000 -> String.format("%.2f亿", number / 100000000.0)
-        number >= 10000 -> String.format("%.2f万", number / 10000.0)
-        else -> number.toString()
-    }
-}
-
-fun formatNumber(number: Double): String {
-    return when {
-        number >= 100000000 -> String.format("%.2f亿", number / 100000000.0)
-        number >= 10000 -> String.format("%.2f万", number / 10000.0)
-        else -> number.toString()
     }
 } 

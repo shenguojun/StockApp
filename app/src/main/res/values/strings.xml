@@ -1,3 +1,57 @@
 <resources>
     <string name="app_name">StockApp</string>
+    
+    <!-- 主组件 -->
+    <string name="logo_top">东方</string>
+    <string name="logo_bottom">财富</string>
+    
+    <!-- 页面标题 -->
+    <string name="placeholder_fund">基金页面</string>
+    <string name="placeholder_portfolio">组合页面</string>
+    
+    <!-- 底部导航栏 -->
+    <string name="nav_home">首页</string>
+    <string name="nav_community">社区</string>
+    <string name="nav_stocks">自选</string>
+    <string name="nav_market">行情</string>
+    <string name="nav_wealth">理财</string>
+    <string name="nav_trade">交易</string>
+    
+    <!-- 股票标签 -->
+    <string name="tab_all">全部</string>
+    <string name="tab_position">持仓</string>
+    <string name="tab_a">沪深京</string>
+    <string name="tab_hk">港股</string>
+    <string name="tab_us">美股</string>
+    
+    <!-- 顶部标签 -->
+    <string name="toptab_stock">自选股</string>
+    <string name="toptab_fund">基金</string>
+    <string name="toptab_portfolio">组合</string>
+    
+    <!-- 股票表格列名 -->
+    <string name="stock_column_name_code">名称/代码</string>
+    <string name="stock_column_latest">最新</string>
+    <string name="stock_column_change_percent">涨幅</string>
+    <string name="stock_column_change">涨跌</string>
+    <string name="stock_column_momentum">涨速</string>
+    <string name="stock_column_volume">总量</string>
+    <string name="stock_column_current_volume">现量</string>
+    <string name="stock_column_amount">金额</string>
+    <string name="stock_column_volume_ratio">量比</string>
+    <string name="stock_column_high">最高</string>
+    <string name="stock_column_low">最低</string>
+    <string name="stock_column_amplitude">振幅</string>
+    <string name="stock_column_turnover_rate">换手</string>
+    
+    <!-- 数值格式 -->
+    <string name="format_percent">%s%%</string>
+    <string name="format_positive_percent">+%s%%</string>
+    <string name="format_negative_percent">%s%%</string>
+    <string name="format_billion">%.2f亿</string>
+    <string name="format_million">%.2f万</string>
+    <string name="format_empty">--</string>
+    
+    <!-- 错误提示 -->
+    <string name="error_unknown">未知错误</string>
 </resources>
