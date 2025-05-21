@@ -294,7 +294,7 @@ fun StockTable(
             // 名称/代码列头
             Box(
                 modifier = Modifier
-                    .width(120.dp)
+                    .width(130.dp)
                     .height(32.dp)  // 明确指定高度
                     .padding(start = 16.dp),
                 contentAlignment = Alignment.CenterStart
@@ -350,7 +350,7 @@ fun TableHeader(
 ) {
     Box(
         modifier = Modifier
-            .width(100.dp)
+            .width(90.dp)
             .height(32.dp)  // 明确指定高度与名称/代码表头一致
             .clickable(
                 onClick = { onSortColumnSelected(column) },
@@ -382,16 +382,33 @@ fun StockRow(
         // 左侧固定的股票名称和代码列
         Column(
             modifier = Modifier
-                .width(120.dp)
+                .width(130.dp)
                 .padding(start = 16.dp)
         ) {
+            // 根据股票名称长度动态调整字体大小和间距
+            val nameLength = stock.name.length
+            val fontSize = when {
+                nameLength <= 4 -> 15.sp  // 短名称使用较大字体
+                nameLength <= 6 -> 14.sp  // 中等长度使用中等字体
+                nameLength <= 10 -> 13.sp // 较长名称使用小字体
+                else -> 12.sp            // 非常长的名称使用最小字体
+            }
+            
+            val letterSpacing = when {
+                nameLength <= 4 -> 0.sp   // 短名称使用正常间距
+                nameLength <= 6 -> (-0.3).sp // 中等长度稍微压缩
+                nameLength <= 10 -> (-0.5).sp // 较长名称压缩间距
+                else -> (-0.8).sp         // 非常长的名称最大压缩间距
+            }
+            
             Text(
                 text = stock.name,
-                fontSize = 15.sp,
+                fontSize = fontSize,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 color = Color.Black,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                letterSpacing = letterSpacing
             )
             
             Spacer(modifier = Modifier.height(2.dp))
@@ -400,7 +417,7 @@ fun StockRow(
                 // 显示股票代码
                 Text(
                     text = stock.code,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     color = Color.Gray
                 )
                 
@@ -418,7 +435,7 @@ fun StockRow(
                         Text(
                             text = "HK",
                             color = Color.White,
-                            fontSize = 10.sp
+                            fontSize = 9.sp
                         )
                     }
                 } else if (stock.type == StockType.US) {
@@ -434,7 +451,7 @@ fun StockRow(
                         Text(
                             text = "US",
                             color = Color.White,
-                            fontSize = 10.sp
+                            fontSize = 9.sp
                         )
                     }
                 }
@@ -494,7 +511,7 @@ fun PriceCell(
 ) {
     Box(
         modifier = Modifier
-            .width(100.dp)
+            .width(90.dp)
             .height(32.dp),  // 明确指定高度
         contentAlignment = Alignment.Center
     ) {
@@ -515,7 +532,7 @@ fun PriceCell(
 fun ChangePercentCell(changePercent: Double) {
     Box(
         modifier = Modifier
-            .width(100.dp)
+            .width(90.dp)
             .height(32.dp),  // 明确指定高度
         contentAlignment = Alignment.Center
     ) {
