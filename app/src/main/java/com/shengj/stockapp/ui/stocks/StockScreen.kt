@@ -267,8 +267,8 @@ fun StockTable(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF5F5F5))
-                .padding(vertical = 12.dp)
+                .background(Color.White)
+                .padding(vertical = 8.dp)
         ) {
             // 名称/代码列头
             Box(
@@ -305,6 +305,9 @@ fun StockTable(
             }
         }
         
+        // 添加一条分隔线
+        Divider(color = Color(0xFFEEEEEE), thickness = 0.5.dp)
+        
         // 股票列表
         LazyColumn {
             items(stocks) { stock ->
@@ -327,7 +330,7 @@ fun TableHeader(
         modifier = Modifier
             .width(100.dp)
             .clickable { onSortColumnSelected(column) }
-            .padding(8.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -347,7 +350,7 @@ fun StockRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
+            .padding(vertical = 12.dp)
     ) {
         // 左侧固定的股票名称和代码列
         Column(
@@ -364,7 +367,7 @@ fun StockRow(
                 overflow = TextOverflow.Ellipsis
             )
             
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // 显示股票代码
@@ -468,13 +471,13 @@ fun PriceCell(
     ) {
         Text(
             text = value,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = when {
                 value == "--" -> Color.Gray
                 isPositive -> Color.Red
                 else -> Color(0xFF00C800)
             },
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Normal
         )
     }
 }
@@ -489,15 +492,15 @@ fun ChangePercentCell(changePercent: Double) {
             modifier = Modifier
                 .background(
                     color = if (changePercent >= 0) Color.Red else Color(0xFF00C800),
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(2.dp)
                 )
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
             Text(
                 text = if (changePercent >= 0) "+${changePercent}%" else "${changePercent}%",
                 color = Color.White,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal
             )
         }
     }
